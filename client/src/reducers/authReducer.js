@@ -1,4 +1,4 @@
-export default function (state = {}, action) {
+export default function authReducer(state = {}, action) {
     console.log(action);
     switch (action.type) {
         default:
