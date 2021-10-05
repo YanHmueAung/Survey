@@ -18,7 +18,6 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <Header />
-            <a href="/auth/google">Sign In with Google</a>
             <Route exact path='/' component={Landing} />
             <Route exact path='/surveys' component={Dashboard} />
             <Route path='/surveys/new' component={SurveyNew} />
