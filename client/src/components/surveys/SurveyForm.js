@@ -38,7 +38,7 @@ function validate(values) {
     //redux form validate function
     const errors = {};
 
-    errors.emails = validateEmails(values.emails || '')
+    errors.recipients = validateEmails(values.recipients || '')
 
     _.each(formFields, ({ name }) => {
         if (!values[name]) {
