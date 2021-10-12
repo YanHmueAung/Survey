@@ -5,18 +5,13 @@ import { reduxForm, Field } from 'redux-form';
 import { Link } from "react-router-dom";
 import SurveyField from "./SurveyField";
 import validateEmails from "../../utils/validateEmails";
+import formFields from "./formFields";
 //Survey Field is a component to 
-const FIELDS = [
-    { label: 'Survey Title', name: 'title' },
-    { label: 'Survey Line', name: 'subject' },
-    { label: 'Email Body', name: 'body' },
-    { label: 'Recipient List', name: 'emails' }
-]
 
 class SurveyForm extends React.Component {
     renderFields() {//looping the data using the lodash so that we dont need to 
         //write the component and type again and again. 
-        return _.map(FIELDS, ({ label, name }) => {
+        return _.map(formFields, ({ label, name }) => {
             return <Field component={SurveyField} type="text" label={label} name={name} />
         })
     }
@@ -45,7 +40,7 @@ function validate(values) {
 
     errors.emails = validateEmails(values.emails || '')
 
-    _.each(FIELDS, ({ name }) => {
+    _.each(formFields, ({ name }) => {
         if (!values[name]) {
             errors[name] = 'you must provide a value';
         }
@@ -59,5 +54,8 @@ function validate(values) {
 export default reduxForm({
     validate,
     //unique name for the form
-    form: 'surveryForm'
+    form: 'surveyForm',
+    //redux form destory automatically when change to another component
+    //to prevent this we use destroyOnUnmount
+    destroyOnUnmount: false
 })(SurveyForm);
