@@ -9,14 +9,15 @@ const Survey = mongoose.model('surveys');
 const Mailer = require('../services/Mailer');
 const surveyTemplate = require('../services/emailTemplates/surveyTemplate')
 module.exports = app => {
-    app.get('/api/surveys/thanks', async (req, res) => {
+
+    app.get('/api/surveys/:surveyId/:choice', async (req, res) => {
         res.send('Thanks for your surverys');
     })
     app.post('/api/surveys/webhooks', (req, res) => {
         console.log(req.body);
 
 
-        const events = _.chain(req.body)
+        _.chain(req.body)
             .map(({ email, url }) => {
                 const pathname = new URL(url).pathname;
                 const p = new Path('/api/surveys/:surveyId/:choice');
@@ -28,10 +29,19 @@ module.exports = app => {
             })
             .compact()
             .uniqBy('email', 'surveyId')
+            .each(({ surveyId, email, choice }) => {
+                Survey.updateOne({
+                    _id: surveyId,
+                    recipients: {
+                        $elemMatch: { email: email, responded: false }
+                    }
+                }, {
+                    $inc: { [choice]: 1 },
+                    $set: { 'recipients.$.responded': true },
+                    lastResponded: new Date()
+                }).exec();
+            })
             .value();
-
-
-        console.log(events);
         res.send({})
     })
     app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
